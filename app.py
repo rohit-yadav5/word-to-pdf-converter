@@ -1,5 +1,5 @@
+import subprocess
 from flask import Flask, request, send_file
-from docx2pdf import convert
 import os
 
 app = Flask(__name__)
@@ -21,29 +21,31 @@ def convert_file():
         if not file:
             return "No file uploaded", 400
 
-        input_path = "temp.docx"
-        output_path = "output.pdf"
+        input_docx = "temp.docx"
+        output_pdf = "temp.pdf"
 
-        # Save uploaded file
-        file.save(input_path)
+        # Save the uploaded Word file
+        file.save(input_docx)
 
-        # Try converting the file
-        print("Starting conversion...")
-        convert(input_path, output_path)
-        print("Conversion successful.")
+        # Run LibreOffice to convert .docx to .pdf
+        # The output PDF will be saved in the same directory as input_docx
+        subprocess.run([
+            '/Applications/LibreOffice.app/Contents/MacOS/soffice',
+            '--headless',
+            '--convert-to',
+            'pdf',
+            input_docx
+        ], check=True)
 
-        # Clean up the input file
-        os.remove(input_path)
+        # Check if PDF was created
+        if not os.path.exists("temp.pdf"):
+            return "PDF conversion failed", 500
 
-        return send_file(output_path, as_attachment=True)
+        # Send the converted PDF file to the user
+        return send_file("temp.pdf", as_attachment=True)
 
     except Exception as e:
-        print("Error during conversion:", e)
-        return f'''
-            <h3>❌ Error during conversion</h3>
-            <p>{str(e)}</p>
-            <a href="/">Go back</a>
-        ''', 500
+        return f"<h3>Error during conversion:</h3><pre>{e}</pre>", 500
 
 if __name__ == "__main__":
     app.run(debug=True)
