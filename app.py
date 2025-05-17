@@ -22,9 +22,13 @@ def convert_file():
         if not file:
             return "No file uploaded", 400
 
+        original_filename = file.filename
+        base_name = os.path.splitext(original_filename)[0]  # e.g., "my_resume"
+        output_filename = base_name + ".pdf"
+
         with tempfile.TemporaryDirectory() as tmpdir:
-            input_path = os.path.join(tmpdir, "input.docx")
-            output_path = os.path.join(tmpdir, "input.pdf")
+            input_path = os.path.join(tmpdir, original_filename)
+            output_path = os.path.join(tmpdir, output_filename)
 
             # Save uploaded file to temp folder
             file.save(input_path)
@@ -38,8 +42,8 @@ def convert_file():
                 input_path
             ], check=True)
 
-            # Send converted PDF to user
-            return send_file(output_path, as_attachment=True)
+            # Send the PDF with the correct filename
+            return send_file(output_path, as_attachment=True, download_name=output_filename)
 
     except Exception as e:
         return f"<h3>Error during conversion:</h3><pre>{e}</pre>", 500
