@@ -1,2 +1,2 @@
-Flask
-docx2pdf
+flask
+gunicorn
