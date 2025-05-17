@@ -18,10 +18,13 @@ def home():
 def convert_file():
     file = request.files['file']
     if file:
-        file.save("temp.docx")
-        convert("temp.docx", "output.pdf")
-        os.remove("temp.docx")
-        return send_file("output.pdf", as_attachment=True)
+        try:
+            file.save("temp.docx")
+            convert("temp.docx", "output.pdf")
+            os.remove("temp.docx")
+            return send_file("output.pdf", as_attachment=True)
+        except Exception as e:
+            return f"Error during conversion: {e}", 500
     return "No file uploaded", 400
 
 if __name__ == "__main__":
