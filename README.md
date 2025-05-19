@@ -2,8 +2,9 @@
 
 Upload your `.docx` file and get a `.pdf` version instantly!
 
-🚀 Live Site: not yet live
+🚀 Live and ready to use
 
+You can just copy the deposit fee in your desktop and plan using Python three you will receive the link you can upload and download files
 
 ## How It Works
 - Upload your Word file
